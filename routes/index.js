@@ -8,4 +8,4 @@ router.use((req, res) => {
   res.status(404).send({ error: "Ой" })
 })
 
-module.exports = router
+module.exports = router;
