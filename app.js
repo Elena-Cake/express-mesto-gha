@@ -1,10 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const path = require('path')
-const { MongoClient } = require('mongodb')
-const routes = require('./routes')
+const path = require('path');
+const bodyParser = require('body-parser');
+const routes = require('./routes');
+
 const { PORT = 3000 } = process.env;
-const bodyParser = require('body-parser')
 const { CodeStatus } = require('./constans/CodeStatus')
 
 mongoose
@@ -23,9 +23,7 @@ app.use(express.static(path.join((__dirname, 'public'))))
 app.use(bodyParser.json())
 
 app.use((req, res, next) => {
-  req.user = {
-    _id: '63f668e2276459db5c5f5329'
-  };
+  req.user = { _id: '63f668e2276459db5c5f5329' };
   next();
 });
 app.use(routes)
