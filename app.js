@@ -5,6 +5,7 @@ const { MongoClient } = require('mongodb')
 const routes = require('./routes')
 const { PORT = 3000 } = process.env;
 const bodyParser = require('body-parser')
+const { CodeStatus } = require('./constans/CodeStatus')
 
 mongoose
   .connect('mongodb://0.0.0.0:27017/mestodb')
@@ -28,6 +29,10 @@ app.use((req, res, next) => {
   next();
 });
 app.use(routes)
+
+app.use((req, res) => {
+  res.status(CodeStatus.INTERNAL.CODE).send(CodeStatus.INTERNAL.MESSAGE)
+})
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`)

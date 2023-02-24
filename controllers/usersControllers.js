@@ -1,18 +1,5 @@
-
+const { CodeStatus } = require('../constans/CodeStatus')
 const User = require('../models/user')
-
-const ERROR_CODE_VALIDATE = 400;
-const ERROR_MESSAGE_VALIDATE_OBJECT = { "message": "Переданы некорректные данные" }
-
-const ERROR_CODE_UNDERFIND = 404;
-const ERROR_MESSAGE_UNDERFIND_OBJECT = { "message": "Пользователь не найден" }
-
-const ERROR_CODE_INTERNAL = 500;
-const ERROR_MESSAGE_INTERNAL_OBJECT = { "message": "Что-то не так..." }
-
-const sendInternalError = (res) => {
-  res.status(ERROR_CODE_INTERNAL).send(ERROR_MESSAGE_INTERNAL_OBJECT)
-}
 
 const createUserStructure = (user) => {
   return {
@@ -24,66 +11,84 @@ const createUserStructure = (user) => {
 }
 
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   return User.find({})
-    .then(users => res.status(200).send(
+    .then(users => res.status(CodeStatus.OK.CODE).send(
       users.map(user => {
         return createUserStructure(user)
       })
     ))
     .catch(err => {
-      sendInternalError(res)
+      next(err);
     })
 }
 
-const getUser = (req, res) => {
+const getUser = (req, res, next) => {
   const { id } = req.params
   return User.findById(id)
     .then(user => {
-      res.status(200).send(createUserStructure(user))
-    })
-    .catch(err => {
-      if (err.name === "CastError") {
-        res.status(ERROR_CODE_UNDERFIND).send(ERROR_MESSAGE_UNDERFIND_OBJECT)
+      if (!user) {
+        res.status(CodeStatus.UNDERFIND.CODE).send(CodeStatus.UNDERFIND.USER_MESSAGE)
         return;
       }
-      sendInternalError(res)
+      console.log(user)
+      res.status(CodeStatus.OK.CODE).send(createUserStructure(user))
+    })
+    .catch(err => {
+      console.log(err)
+      if (err.name === "CastError") {
+        res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE)
+        return;
+      }
+      next(err);
     })
 }
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, about, avatar } = req.body
   User.create({ name, about, avatar })
-    .then(user => res.status(200).send(createUserStructure(user)))
+    .then(user => res.status(CodeStatus.OK.CODE).send(createUserStructure(user)))
     .catch(err => {
       if (err.name === "ValidationError") {
-        res.status(ERROR_CODE_VALIDATE).send(ERROR_MESSAGE_VALIDATE_OBJECT)
+        res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE)
         return;
       }
-      sendInternalError(res)
+      next(err);
     })
 }
 
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const { name, about } = req.body
   User.findByIdAndUpdate(req.user._id, { name, about })
-    .then(user => res.status(200).send(createUserStructure(user)))
-    .catch(err => {
-      if (err.name === "ValidationError") {
-        res.status(ERROR_CODE_VALIDATE).send(ERROR_MESSAGE_VALIDATE_OBJECT)
+    .then(user => {
+      if (!user) {
+        res.status(CodeStatus.UNDERFIND.CODE).send(CodeStatus.UNDERFIND.USER_MESSAGE)
         return;
       }
-      sendInternalError(res)
+      return res.status(CodeStatus.OK.CODE).send({ data: user })
+    })
+    .catch(err => {
+      if (err.name === "ValidationError") {
+        res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE)
+        return;
+      }
+      next(err);
     })
 }
 
-const updateAvatar = (req, res) => {
+const updateAvatar = (req, res, next) => {
   const { avatar } = req.body
   User.findByIdAndUpdate(req.user._id, { avatar })
-    .then(user => res.status(200).send(createUserStructure(user)))
+    .then(user => {
+      if (!user) {
+        res.status(CodeStatus.UNDERFIND.CODE).send(CodeStatus.UNDERFIND.USER_MESSAGE)
+        return;
+      }
+      res.status(CodeStatus.OK.CODE).send(createUserStructure(user))
+    })
     .catch(err => {
       if (err.name === "ValidationError") {
-        res.status(ERROR_CODE_VALIDATE).send(ERROR_MESSAGE_VALIDATE_OBJECT)
+        res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE)
         return;
       }
       sendInternalError(res)

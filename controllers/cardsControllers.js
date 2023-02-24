@@ -1,18 +1,5 @@
-
+const { CodeStatus } = require('../constans/CodeStatus')
 const Card = require('../models/card')
-
-const ERROR_CODE_VALIDATE = 400;
-const ERROR_MESSAGE_VALIDATE_OBJECT = { "message": "Переданы некорректные данные" }
-
-const ERROR_CODE_UNDERFIND = 404;
-const ERROR_MESSAGE_UNDERFIND_OBJECT = { "message": "Карточка не найдена" }
-
-const ERROR_CODE_INTERNAL = 500;
-const ERROR_MESSAGE_INTERNAL_OBJECT = { "message": "Что-то не так..." }
-
-const sendInternalError = (res) => {
-  res.status(ERROR_CODE_INTERNAL).send(ERROR_MESSAGE_INTERNAL_OBJECT)
-}
 
 const createCardStructure = (card) => {
   return {
@@ -26,67 +13,67 @@ const createCardStructure = (card) => {
 }
 
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   return Card.find({})
-    .then(cards => res.status(200).send(
+    .then(cards => res.status(CodeStatus.OK.CODE).send(
       cards.map(card => createCardStructure(card))
     ))
     .catch(err => {
-      sendInternalError(res)
+      next(err);
     })
 }
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link, owner } = req.body
   Card.create({ name, link, owner })
-    .then(card => res.status(200).send(createCardStructure(card)))
+    .then(card => res.status(CodeStatus.OK.CODE).send(createCardStructure(card)))
     .catch(err => {
       if (err.name === "ValidationError") {
-        res.status(ERROR_CODE_VALIDATE).send(ERROR_MESSAGE_VALIDATE_OBJECT)
+        res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE)
         return;
       }
-      sendInternalError(res)
+      next(err);
     })
 }
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   const { cardId } = req.params
   Card.findByIdAndRemove(cardId)
-    .then(card => res.status(200).send(createCardStructure(card)))
+    .then(card => res.status(CodeStatus.OK.CODE).send(createCardStructure(card)))
     .catch(err => {
-      sendInternalError(res)
+      next(err);
     })
 }
 
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then(card => res.status(200).send(createCardStructure(card)))
+    .then(card => res.status(CodeStatus.OK.CODE).send(createCardStructure(card)))
     .catch(err => {
       if (err.name === "CastError") {
-        res.status(ERROR_CODE_UNDERFIND).send(ERROR_MESSAGE_UNDERFIND_OBJECT)
+        res.status(CodeStatus.UNDERFIND.CODE).send(CodeStatus.UNDERFIND.CARD_MESSAGE)
         return;
       }
-      sendInternalError(res)
+      next(err);
     })
 }
 
-const dislikeCard = (req, res) => {
+const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then(card => res.status(200).send(createCardStructure(card)))
+    .then(card => res.status(CodeStatus.OK.CODE).send(createCardStructure(card)))
     .catch(err => {
       if (err.name === "CastError") {
-        res.status(ERROR_CODE_UNDERFIND).send(ERROR_MESSAGE_UNDERFIND_OBJECT)
+        res.status(CodeStatus.UNDERFIND.CODE).send(CodeStatus.UNDERFIND.CARD_MESSAGE)
         return;
       }
-      sendInternalError(res)
+      next(err);
     })
 }
 
