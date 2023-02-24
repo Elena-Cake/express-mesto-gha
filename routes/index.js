@@ -7,7 +7,7 @@ router.use('/users', userRoutes)
 router.use('/cards', cardRoutes)
 
 router.use((req, res) => {
-  res.status(404).send({ error: "Ой" })
+  res.status(404).send({ error: "я — чайник(" })
 })
 
 module.exports = router;

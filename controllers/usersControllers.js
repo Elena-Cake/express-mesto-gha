@@ -62,7 +62,6 @@ const updateUser = (req, res, next) => {
   console.log(req.user._id)
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then(user => {
-      console.log('user', user)
       if (!user) {
         res.status(CodeStatus.UNDERFINED.CODE).send(CodeStatus.UNDERFINED.USER_MESSAGE)
         return;
@@ -81,7 +80,7 @@ const updateUser = (req, res, next) => {
 
 const updateAvatar = (req, res, next) => {
   const { avatar } = req.body
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then(user => {
       if (!user) {
         res.status(CodeStatus.UNDERFINED.CODE).send(CodeStatus.UNDERFINED.USER_MESSAGE)
@@ -94,7 +93,7 @@ const updateAvatar = (req, res, next) => {
         res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE)
         return;
       }
-      sendInternalError(res)
+      next(err);
     })
 }
 

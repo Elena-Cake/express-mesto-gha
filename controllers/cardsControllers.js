@@ -24,8 +24,8 @@ const getCards = (req, res, next) => {
 }
 
 const createCard = (req, res, next) => {
-  const { name, link, owner } = req.body
-  Card.create({ name, link, owner })
+  const { name, link } = req.body
+  Card.create({ name, link, owner: req.user._id })
     .then(card => res.status(CodeStatus.OK.CODE).send(createCardStructure(card)))
     .catch(err => {
       if (err.name === "ValidationError") {
@@ -39,8 +39,18 @@ const createCard = (req, res, next) => {
 const deleteCard = (req, res, next) => {
   const { cardId } = req.params
   Card.findByIdAndRemove(cardId)
-    .then(card => res.status(CodeStatus.OK.CODE).send(createCardStructure(card)))
+    .then(card => {
+      if (!card) {
+        res.status(CodeStatus.UNDERFINED.CODE).send(CodeStatus.UNDERFINED.CARD_MESSAGE)
+        return;
+      }
+      res.status(CodeStatus.OK.CODE).send(createCardStructure(card))
+    })
     .catch(err => {
+      if (err.name === "CastError") {
+        res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE)
+        return;
+      }
       next(err);
     })
 }
@@ -49,12 +59,18 @@ const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
-    { new: true },
+    { new: true, runValidators: true }
   )
-    .then(card => res.status(CodeStatus.OK.CODE).send(createCardStructure(card)))
+    .then(card => {
+      if (!card) {
+        res.status(CodeStatus.UNDERFINED.CODE).send(CodeStatus.UNDERFINED.CARD_MESSAGE)
+        return;
+      }
+      res.status(CodeStatus.OK.CODE).send(createCardStructure(card))
+    })
     .catch(err => {
       if (err.name === "CastError") {
-        res.status(CodeStatus.UNDERFINED.CODE).send(CodeStatus.UNDERFINED.CARD_MESSAGE)
+        res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE)
         return;
       }
       next(err);
@@ -65,12 +81,18 @@ const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
-    { new: true },
+    { new: true, runValidators: true }
   )
-    .then(card => res.status(CodeStatus.OK.CODE).send(createCardStructure(card)))
+    .then(card => {
+      if (!card) {
+        res.status(CodeStatus.UNDERFINED.CODE).send(CodeStatus.UNDERFINED.CARD_MESSAGE)
+        return;
+      }
+      res.status(CodeStatus.OK.CODE).send(createCardStructure(card))
+    })
     .catch(err => {
       if (err.name === "CastError") {
-        res.status(CodeStatus.UNDERFINED.CODE).send(CodeStatus.UNDERFINED.CARD_MESSAGE)
+        res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE)
         return;
       }
       next(err);
