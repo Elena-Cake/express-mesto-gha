@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const { CodeStatus } = require('../constans/CodeStatus');
 const User = require('../models/user');
 
@@ -33,7 +34,7 @@ const getUser = (req, res, next) => {
       res.status(CodeStatus.OK.CODE).send(createUserDTO(user));
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof mongoose.Error.CastError) {
         res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE);
         return;
       }
@@ -47,7 +48,7 @@ const createUser = (req, res, next) => {
     .create({ name, about, avatar })
     .then((user) => res.status(CodeStatus.CREATED.CODE).send(createUserDTO(user)))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE);
         return;
       }
@@ -67,7 +68,7 @@ const updateUser = (req, res, next) => {
       res.status(CodeStatus.OK.CODE).send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE);
         return;
       }
@@ -87,7 +88,7 @@ const updateAvatar = (req, res, next) => {
       res.status(CodeStatus.OK.CODE).send(createUserDTO(user));
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE);
         return;
       }
