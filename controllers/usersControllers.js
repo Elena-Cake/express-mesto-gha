@@ -60,8 +60,9 @@ const createUser = (req, res, next) => {
 const updateUser = (req, res, next) => {
   const { name, about } = req.body
   console.log(req.user._id)
-  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then(user => {
+      console.log('user', user)
       if (!user) {
         res.status(CodeStatus.UNDERFINED.CODE).send(CodeStatus.UNDERFINED.USER_MESSAGE)
         return;
@@ -69,6 +70,7 @@ const updateUser = (req, res, next) => {
       return res.status(CodeStatus.OK.CODE).send({ data: user })
     })
     .catch(err => {
+      console.log(err)
       if (err.name === "ValidationError") {
         res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE)
         return;
@@ -79,7 +81,7 @@ const updateUser = (req, res, next) => {
 
 const updateAvatar = (req, res, next) => {
   const { avatar } = req.body
-  User.findByIdAndUpdate(req.user._id, { avatar })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
     .then(user => {
       if (!user) {
         res.status(CodeStatus.UNDERFINED.CODE).send(CodeStatus.UNDERFINED.USER_MESSAGE)
