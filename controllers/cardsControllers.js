@@ -54,7 +54,7 @@ const likeCard = (req, res, next) => {
     .then(card => res.status(CodeStatus.OK.CODE).send(createCardStructure(card)))
     .catch(err => {
       if (err.name === "CastError") {
-        res.status(CodeStatus.UNDERFIND.CODE).send(CodeStatus.UNDERFIND.CARD_MESSAGE)
+        res.status(CodeStatus.UNDERFINED.CODE).send(CodeStatus.UNDERFINED.CARD_MESSAGE)
         return;
       }
       next(err);
@@ -70,7 +70,7 @@ const dislikeCard = (req, res, next) => {
     .then(card => res.status(CodeStatus.OK.CODE).send(createCardStructure(card)))
     .catch(err => {
       if (err.name === "CastError") {
-        res.status(CodeStatus.UNDERFIND.CODE).send(CodeStatus.UNDERFIND.CARD_MESSAGE)
+        res.status(CodeStatus.UNDERFINED.CODE).send(CodeStatus.UNDERFINED.CARD_MESSAGE)
         return;
       }
       next(err);

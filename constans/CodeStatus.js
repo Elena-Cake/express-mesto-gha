@@ -9,7 +9,7 @@ const CodeStatus = {
     CODE: 400,
     MESSAGE: { "message": "Переданы некорректные данные" }
   },
-  UNDERFIND: {
+  UNDERFINED: {
     CODE: 404,
     USER_MESSAGE: { "message": "Пользователь не найден" },
     CARD_MESSAGE: { "message": "Карточка не найдена" }
