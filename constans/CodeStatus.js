@@ -3,17 +3,17 @@ const CodeStatus = {
   CREATED: { CODE: 201 },
   NO_VALIDATE: {
     CODE: 400,
-    MESSAGE: { 'message': 'Переданы некорректные данные' }
+    MESSAGE: { message: 'Переданы некорректные данные' },
   },
   UNDERFINED: {
     CODE: 404,
-    USER_MESSAGE: { 'message': 'Пользователь не найден' },
-    CARD_MESSAGE: { 'message': 'Карточка не найдена' }
+    USER_MESSAGE: { message: 'Пользователь не найден' },
+    CARD_MESSAGE: { message: 'Карточка не найдена' },
   },
   INTERNAL: {
     CODE: 500,
-    MESSAGE: { 'message': 'Проблема во мне...' }
-  }
+    MESSAGE: { message: 'Проблема во мне...' },
+  },
 };
 
 module.exports = { CodeStatus };

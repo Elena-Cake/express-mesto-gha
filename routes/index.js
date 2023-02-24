@@ -1,13 +1,13 @@
-const router = require('express').Router()
+const router = require('express').Router();
 
-const userRoutes = require('./user')
-const cardRoutes = require('./card')
+const userRoutes = require('./user');
+const cardRoutes = require('./card');
 
-router.use('/users', userRoutes)
-router.use('/cards', cardRoutes)
+router.use('/users', userRoutes);
+router.use('/cards', cardRoutes);
 
 router.use((req, res) => {
-  res.status(404).send({ message: 'я - чайник!' })
-})
+  res.status(404).send({ message: 'я - чайник!' });
+});
 
 module.exports = router;
