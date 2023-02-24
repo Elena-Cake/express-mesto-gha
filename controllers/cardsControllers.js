@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const { CodeStatus } = require('../constans/CodeStatus');
 const Card = require('../models/card');
 
@@ -32,7 +33,7 @@ const createCard = (req, res, next) => {
       res.status(CodeStatus.CREATED.CODE).send(createCardDTO(card));
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE);
         return;
       }
@@ -52,7 +53,7 @@ const deleteCard = (req, res, next) => {
       res.status(CodeStatus.OK.CODE).send(createCardDTO(card));
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof mongoose.Error.CastError) {
         res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE);
         return;
       }
@@ -76,7 +77,7 @@ const likeCard = (req, res, next) => {
       res.status(CodeStatus.OK.CODE).send(createCardDTO(card));
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof mongoose.Error.CastError) {
         res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE);
         return;
       }
@@ -100,7 +101,7 @@ const dislikeCard = (req, res, next) => {
       res.status(CodeStatus.OK.CODE).send(createCardDTO(card));
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof mongoose.Error.CastError) {
         res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE);
         return;
       }
