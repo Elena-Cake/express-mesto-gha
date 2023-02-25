@@ -16,11 +16,12 @@ const createCardDTO = (card) => (
 const getCards = (req, res, next) => {
   Card
     .find({})
-    .populate('owner')
+    .populate(['owner', 'likes'])
     .then((cards) => {
-      res.status(CodeStatus.OK.CODE).send(
-        cards.map((card) => createCardDTO(card)),
-      );
+      res.status(CodeStatus.OK.CODE)
+        .send(
+          cards.map((card) => createCardDTO(card)),
+        );
     })
     .catch(next);
 };
@@ -30,11 +31,13 @@ const createCard = (req, res, next) => {
   Card
     .create({ name, link, owner: req.user._id })
     .then((card) => {
-      res.status(CodeStatus.CREATED.CODE).send(createCardDTO(card));
+      res.status(CodeStatus.CREATED.CODE)
+        .send(createCardDTO(card));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE);
+        res.status(CodeStatus.NO_VALIDATE.CODE)
+          .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
         return;
       }
       next(err);
@@ -47,14 +50,17 @@ const deleteCard = (req, res, next) => {
     .findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
-        res.status(CodeStatus.UNDERFINED.CODE).send(CodeStatus.UNDERFINED.CARD_MESSAGE);
+        res.status(CodeStatus.UNDERFINED.CODE)
+          .send({ message: CodeStatus.UNDERFINED.CARD_MESSAGE });
         return;
       }
-      res.status(CodeStatus.OK.CODE).send(createCardDTO(card));
+      res.status(CodeStatus.OK.CODE)
+        .send(createCardDTO(card));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE);
+        res.status(CodeStatus.NO_VALIDATE.CODE)
+          .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
         return;
       }
       next(err);
@@ -71,14 +77,17 @@ const likeCard = (req, res, next) => {
     .populate('owner')
     .then((card) => {
       if (!card) {
-        res.status(CodeStatus.UNDERFINED.CODE).send(CodeStatus.UNDERFINED.CARD_MESSAGE);
+        res.status(CodeStatus.UNDERFINED.CODE)
+          .send({ message: CodeStatus.UNDERFINED.CARD_MESSAGE });
         return;
       }
-      res.status(CodeStatus.OK.CODE).send(createCardDTO(card));
+      res.status(CodeStatus.OK.CODE)
+        .send(createCardDTO(card));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE);
+        res.status(CodeStatus.NO_VALIDATE.CODE)
+          .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
         return;
       }
       next(err);
@@ -95,14 +104,17 @@ const dislikeCard = (req, res, next) => {
     .populate('owner')
     .then((card) => {
       if (!card) {
-        res.status(CodeStatus.UNDERFINED.CODE).send(CodeStatus.UNDERFINED.CARD_MESSAGE);
+        res.status(CodeStatus.UNDERFINED.CODE)
+          .send({ message: CodeStatus.UNDERFINED.CARD_MESSAGE });
         return;
       }
-      res.status(CodeStatus.OK.CODE).send(createCardDTO(card));
+      res.status(CodeStatus.OK.CODE)
+        .send(createCardDTO(card));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE);
+        res.status(CodeStatus.NO_VALIDATE.CODE)
+          .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
         return;
       }
       next(err);

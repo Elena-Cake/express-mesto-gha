@@ -3,16 +3,17 @@ const CodeStatus = {
   CREATED: { CODE: 201 },
   NO_VALIDATE: {
     CODE: 400,
-    MESSAGE: { message: 'Переданы некорректные данные' },
+    MESSAGE: 'Переданы некорректные данные',
   },
   UNDERFINED: {
     CODE: 404,
-    USER_MESSAGE: { message: 'Пользователь не найден' },
-    CARD_MESSAGE: { message: 'Карточка не найдена' },
+    USER_MESSAGE: 'Пользователь не найден',
+    CARD_MESSAGE: 'Карточка не найдена',
+    TEAPOT_MESSAGE: 'я - чайник!',
   },
   INTERNAL: {
     CODE: 500,
-    MESSAGE: { message: 'Проблема во мне...' },
+    MESSAGE: 'Проблема во мне...',
   },
 };
 

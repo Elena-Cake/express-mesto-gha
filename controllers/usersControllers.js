@@ -14,11 +14,12 @@ const createUserDTO = (user) => (
 const getUsers = (req, res, next) => {
   User
     .find({})
-    .then((users) => res.status(CodeStatus.OK.CODE).send(
-      users.map((user) => (
-        createUserDTO(user)
-      )),
-    ))
+    .then((users) => res.status(CodeStatus.OK.CODE)
+      .send(
+        users.map((user) => (
+          createUserDTO(user)
+        )),
+      ))
     .catch(next);
 };
 
@@ -28,14 +29,17 @@ const getUser = (req, res, next) => {
     .findById(id)
     .then((user) => {
       if (!user) {
-        res.status(CodeStatus.UNDERFINED.CODE).send(CodeStatus.UNDERFINED.USER_MESSAGE);
+        res.status(CodeStatus.UNDERFINED.CODE)
+          .send({ message: CodeStatus.UNDERFINED.USER_MESSAGE });
         return;
       }
-      res.status(CodeStatus.OK.CODE).send(createUserDTO(user));
+      res.status(CodeStatus.OK.CODE)
+        .send(createUserDTO(user));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE);
+        res.status(CodeStatus.NO_VALIDATE.CODE)
+          .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
         return;
       }
       next(err);
@@ -46,10 +50,12 @@ const createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
   User
     .create({ name, about, avatar })
-    .then((user) => res.status(CodeStatus.CREATED.CODE).send(createUserDTO(user)))
+    .then((user) => res.status(CodeStatus.CREATED.CODE)
+      .send(createUserDTO(user)))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE);
+        res.status(CodeStatus.NO_VALIDATE.CODE)
+          .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
         return;
       }
       next(err);
@@ -62,14 +68,17 @@ const updateUser = (req, res, next) => {
     .findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        res.status(CodeStatus.UNDERFINED.CODE).send(CodeStatus.UNDERFINED.USER_MESSAGE);
+        res.status(CodeStatus.UNDERFINED.CODE)
+          .send({ message: CodeStatus.UNDERFINED.USER_MESSAGE });
         return;
       }
-      res.status(CodeStatus.OK.CODE).send({ data: user });
+      res.status(CodeStatus.OK.CODE)
+        .send({ data: user });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE);
+        res.status(CodeStatus.NO_VALIDATE.CODE)
+          .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
         return;
       }
       next(err);
@@ -82,14 +91,17 @@ const updateAvatar = (req, res, next) => {
     .findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        res.status(CodeStatus.UNDERFINED.CODE).send(CodeStatus.UNDERFINED.USER_MESSAGE);
+        res.status(CodeStatus.UNDERFINED.CODE)
+          .send({ message: CodeStatus.UNDERFINED.USER_MESSAGE });
         return;
       }
-      res.status(CodeStatus.OK.CODE).send(createUserDTO(user));
+      res.status(CodeStatus.OK.CODE)
+        .send(createUserDTO(user));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(CodeStatus.NO_VALIDATE.CODE).send(CodeStatus.NO_VALIDATE.MESSAGE);
+        res.status(CodeStatus.NO_VALIDATE.CODE)
+          .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
         return;
       }
       next(err);
