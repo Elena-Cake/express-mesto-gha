@@ -3,13 +3,15 @@ const {
   getUsers, getUser, createUser, updateUser, updateAvatar, login,
 } = require('../controllers/usersControllers');
 
-router.get('/', getUsers);
-router.get('/:id', getUser);
+const { auth } = require('../midldlewares/auth');
+
+router.get('/', auth, getUsers);
+router.get('/:id', auth, getUser);
 
 router.post('/signup', createUser);
 router.post('/login', login);
 
-router.patch('/me', updateUser);
-router.patch('/me/avatar', updateAvatar);
+router.patch('/me', auth, updateUser);
+router.patch('/me/avatar', auth, updateAvatar);
 
 module.exports = router;

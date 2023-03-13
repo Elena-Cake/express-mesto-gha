@@ -5,6 +5,10 @@ const CodeStatus = {
     CODE: 400,
     MESSAGE: 'Переданы некорректные данные',
   },
+  UNAUTHORIZED: {
+    CODE: 401,
+    MESSAGE: 'Проверьте почту и пароль',
+  },
   UNDERFINED: {
     CODE: 404,
     USER_MESSAGE: 'Пользователь не найден',

@@ -91,15 +91,15 @@ const createUser = (req, res, next) => {
 const login = (req, res, next) => {
   const { email, password } = req.body;
   User
-    .findOne({ email })
-    .orFail(() => res.status(CodeStatus.UNDERFINED.CODE)
-      .send({ message: CodeStatus.UNDERFINED.USER_MESSAGE }))
+    .findOne({ email }).select('+password')
+    .orFail(() => res.status(CodeStatus.UNAUTHORIZED.CODE)
+      .send({ message: CodeStatus.UNAUTHORIZED.USER_MESSAGE }))
     .then((user) => bcrypt.compare(password, user.password).then((mached) => {
       if (mached) {
         return user;
       }
-      return res.status(CodeStatus.UNDERFINED.CODE)
-        .send({ message: CodeStatus.UNDERFINED.USER_MESSAGE });
+      return res.status(CodeStatus.UNAUTHORIZED.CODE)
+        .send({ message: CodeStatus.UNAUTHORIZED.USER_MESSAGE });
     }))
     .then((user) => {
       const jwt = jsonwebtoken.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
