@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const { CodeStatus } = require('../constans/CodeStatus');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const jsonwebtoken = require('jsonwebtoken');
+const { JWT_SECRET } = require('../config');
 
 const createUserDTO = (user) => (
   {
@@ -88,10 +90,22 @@ const createUser = (req, res, next) => {
 // POST http://localhost:3001/users/login
 const login = (req, res, next) => {
   const { email, password } = req.body;
-  res.status(200).send({ email, password })
-    .catch((err) => {
-      next(err);
-    });
+  User
+    .findOne({ email })
+    .orFail(() => res.status(CodeStatus.UNDERFINED.CODE)
+      .send({ message: CodeStatus.UNDERFINED.USER_MESSAGE }))
+    .then((user) => bcrypt.compare(password, user.password).then((mached) => {
+      if (mached) {
+        return user;
+      }
+      return res.status(CodeStatus.UNDERFINED.CODE)
+        .send({ message: CodeStatus.UNDERFINED.USER_MESSAGE });
+    }))
+    .then((user) => {
+      const jwt = jsonwebtoken.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
+      res.send({ user: createUserDTO(user), jwt });
+    })
+    .catch(next);
 };
 
 const updateUser = (req, res, next) => {
