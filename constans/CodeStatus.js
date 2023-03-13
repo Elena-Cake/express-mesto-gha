@@ -11,6 +11,10 @@ const CodeStatus = {
     CARD_MESSAGE: 'Карточка не найдена',
     TEAPOT_MESSAGE: 'я - чайник!',
   },
+  CONFLICT: {
+    CODE: 409,
+    MESSAGE: 'Пользователь с такими данными уже существует',
+  },
   INTERNAL: {
     CODE: 500,
     MESSAGE: 'Проблема во мне...',

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { CodeStatus } = require('../constans/CodeStatus');
 const User = require('../models/user');
+const bcrypt = require('bcrypt');
 
 const createUserDTO = (user) => (
   {
@@ -8,7 +9,6 @@ const createUserDTO = (user) => (
     about: user.about,
     avatar: user.avatar,
     email: user.email,
-    password: user.password,
     _id: user._id,
   }
 );
@@ -57,23 +57,31 @@ const createUser = (req, res, next) => {
     email,
     password,
   } = req.body;
-  User
-    .create({
-      name,
-      about,
-      avatar,
-      email,
-      password,
-    })
-    .then((user) => res.status(CodeStatus.CREATED.CODE)
-      .send(createUserDTO(user)))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        res.status(CodeStatus.NO_VALIDATE.CODE)
-          .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
-        return;
-      }
-      next(err);
+
+  bcrypt.hash(password, 10)
+    .then((hash) => {
+      User
+        .create({
+          name,
+          about,
+          avatar,
+          email,
+          password: hash,
+        })
+        .then((user) => res.status(CodeStatus.CREATED.CODE)
+          .send(createUserDTO(user)))
+        .catch((err) => {
+          if (err instanceof mongoose.Error.ValidationError) {
+            res.status(CodeStatus.NO_VALIDATE.CODE)
+              .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
+            return;
+          }
+          if (err.code === 11000) {
+            res.status(CodeStatus.CONFLICT.CODE)
+              .send({ message: CodeStatus.CONFLICT.MESSAGE });
+          }
+          next(err);
+        });
     });
 };
 
