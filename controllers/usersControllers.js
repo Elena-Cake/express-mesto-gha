@@ -7,6 +7,8 @@ const createUserDTO = (user) => (
     name: user.name,
     about: user.about,
     avatar: user.avatar,
+    email: user.email,
+    password: user.password,
     _id: user._id,
   }
 );
@@ -46,10 +48,23 @@ const getUser = (req, res, next) => {
     });
 };
 
+// POST http://localhost:3001/users/signup
 const createUser = (req, res, next) => {
-  const { name, about, avatar } = req.body;
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
   User
-    .create({ name, about, avatar })
+    .create({
+      name,
+      about,
+      avatar,
+      email,
+      password,
+    })
     .then((user) => res.status(CodeStatus.CREATED.CODE)
       .send(createUserDTO(user)))
     .catch((err) => {
@@ -58,6 +73,15 @@ const createUser = (req, res, next) => {
           .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
         return;
       }
+      next(err);
+    });
+};
+
+// POST http://localhost:3001/users/login
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+  res.status(200).send({ email, password })
+    .catch((err) => {
       next(err);
     });
 };
@@ -109,5 +133,5 @@ const updateAvatar = (req, res, next) => {
 };
 
 module.exports = {
-  getUsers, getUser, createUser, updateUser, updateAvatar,
+  getUsers, getUser, createUser, updateUser, updateAvatar, login,
 };
