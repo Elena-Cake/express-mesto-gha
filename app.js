@@ -25,10 +25,6 @@ const app = express();
 // app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(bodyParser.json());
 
-app.use((req, res, next) => {
-  req.user = { _id: '63f668e2276459db5c5f5329' };
-  next();
-});
 app.use(routes);
 
 app.use(errorHandler);

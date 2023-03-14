@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 const { CodeStatus } = require('../constans/CodeStatus');
+const ForbiddenError = require('../errors/Forbidden');
+const NoValidateError = require('../errors/NoValidate');
+const UnderfinedError = require('../errors/Underfined');
 const Card = require('../models/card');
 
 const createCardDTO = (card) => (
@@ -36,35 +39,34 @@ const createCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(CodeStatus.NO_VALIDATE.CODE)
-          .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
-        return;
+        throw next(new NoValidateError());
       }
-      next(err);
-    });
+    })
+    .catch(next);
 };
 
 const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
+  const user = req.user._id;
+
   Card
-    .findByIdAndRemove(cardId)
+    .findById(cardId)
     .then((card) => {
       if (!card) {
-        res.status(CodeStatus.UNDERFINED.CODE)
-          .send({ message: CodeStatus.UNDERFINED.CARD_MESSAGE });
-        return;
+        throw next(new UnderfinedError('Карточка не найдена'));
       }
-      res.status(CodeStatus.OK.CODE)
-        .send(createCardDTO(card));
+      if (user !== card.owner.valueOf()) {
+        throw next(new ForbiddenError());
+      }
+      return card.remove()
+        .then(() => res.send({ card }));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(CodeStatus.NO_VALIDATE.CODE)
-          .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
-        return;
+        throw next(new NoValidateError());
       }
-      next(err);
-    });
+    })
+    .catch(next);
 };
 
 const likeCard = (req, res, next) => {
@@ -77,21 +79,17 @@ const likeCard = (req, res, next) => {
     .populate('owner')
     .then((card) => {
       if (!card) {
-        res.status(CodeStatus.UNDERFINED.CODE)
-          .send({ message: CodeStatus.UNDERFINED.CARD_MESSAGE });
-        return;
+        throw next(new UnderfinedError('Карточка не найдена'));
       }
       res.status(CodeStatus.OK.CODE)
         .send(createCardDTO(card));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(CodeStatus.NO_VALIDATE.CODE)
-          .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
-        return;
+        throw next(new NoValidateError());
       }
-      next(err);
-    });
+    })
+    .catch(next);
 };
 
 const dislikeCard = (req, res, next) => {
@@ -104,21 +102,17 @@ const dislikeCard = (req, res, next) => {
     .populate('owner')
     .then((card) => {
       if (!card) {
-        res.status(CodeStatus.UNDERFINED.CODE)
-          .send({ message: CodeStatus.UNDERFINED.CARD_MESSAGE });
-        return;
+        throw next(new UnderfinedError('Карточка не найдена'));
       }
       res.status(CodeStatus.OK.CODE)
         .send(createCardDTO(card));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(CodeStatus.NO_VALIDATE.CODE)
-          .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
-        return;
+        throw next(new NoValidateError());
       }
-      next(err);
-    });
+    })
+    .catch(next);
 };
 
 module.exports = {

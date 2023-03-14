@@ -1,5 +1,5 @@
-const { CodeStatus } = require("../constans/CodeStatus");
 const jsonwebtoken = require('jsonwebtoken');
+const { CodeStatus } = require('../constans/CodeStatus');
 const { JWT_SECRET } = require('../config');
 
 // get

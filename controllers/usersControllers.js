@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
-const { CodeStatus } = require('../constans/CodeStatus');
-const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jsonwebtoken = require('jsonwebtoken');
+const { CodeStatus } = require('../constans/CodeStatus');
+const User = require('../models/user');
 const { JWT_SECRET } = require('../config');
+const UnderfinedError = require('../errors/Underfined');
+const NoValidateError = require('../errors/NoValidate');
+const ConflictError = require('../errors/Conflict');
+const UnauthorizedError = require('../errors/Unauthorized');
 
 const createUserDTO = (user) => (
   {
@@ -33,21 +37,17 @@ const getUser = (req, res, next) => {
     .findById(id)
     .then((user) => {
       if (!user) {
-        res.status(CodeStatus.UNDERFINED.CODE)
-          .send({ message: CodeStatus.UNDERFINED.USER_MESSAGE });
-        return;
+        throw next(new UnderfinedError('Пользователь не найден'));
       }
       res.status(CodeStatus.OK.CODE)
         .send(createUserDTO(user));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(CodeStatus.NO_VALIDATE.CODE)
-          .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
-        return;
+        throw next(new NoValidateError());
       }
-      next(err);
-    });
+    })
+    .catch(next);
 };
 
 // POST http://localhost:3001/users/signup
@@ -74,16 +74,13 @@ const createUser = (req, res, next) => {
           .send(createUserDTO(user)))
         .catch((err) => {
           if (err instanceof mongoose.Error.ValidationError) {
-            res.status(CodeStatus.NO_VALIDATE.CODE)
-              .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
-            return;
+            throw next(new NoValidateError());
           }
           if (err.code === 11000) {
-            res.status(CodeStatus.CONFLICT.CODE)
-              .send({ message: CodeStatus.CONFLICT.MESSAGE });
+            throw next(new ConflictError());
           }
-          next(err);
-        });
+        })
+        .catch(next);
     });
 };
 
@@ -92,14 +89,14 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
   User
     .findOne({ email }).select('+password')
-    .orFail(() => res.status(CodeStatus.UNAUTHORIZED.CODE)
-      .send({ message: CodeStatus.UNAUTHORIZED.USER_MESSAGE }))
+    .orFail(() => {
+      throw next(new UnauthorizedError());
+    })
     .then((user) => bcrypt.compare(password, user.password).then((mached) => {
       if (mached) {
         return user;
       }
-      return res.status(CodeStatus.UNAUTHORIZED.CODE)
-        .send({ message: CodeStatus.UNAUTHORIZED.USER_MESSAGE });
+      throw next(new UnauthorizedError());
     }))
     .then((user) => {
       const jwt = jsonwebtoken.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
@@ -114,21 +111,17 @@ const updateUser = (req, res, next) => {
     .findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        res.status(CodeStatus.UNDERFINED.CODE)
-          .send({ message: CodeStatus.UNDERFINED.USER_MESSAGE });
-        return;
+        throw next(new UnderfinedError('Пользователь не найден'));
       }
       res.status(CodeStatus.OK.CODE)
         .send({ data: user });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(CodeStatus.NO_VALIDATE.CODE)
-          .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
-        return;
+        throw next(new NoValidateError());
       }
-      next(err);
-    });
+    })
+    .catch(next);
 };
 
 const updateAvatar = (req, res, next) => {
@@ -137,18 +130,14 @@ const updateAvatar = (req, res, next) => {
     .findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        res.status(CodeStatus.UNDERFINED.CODE)
-          .send({ message: CodeStatus.UNDERFINED.USER_MESSAGE });
-        return;
+        throw next(new UnderfinedError('Пользователь не найден'));
       }
       res.status(CodeStatus.OK.CODE)
         .send(createUserDTO(user));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(CodeStatus.NO_VALIDATE.CODE)
-          .send({ message: CodeStatus.NO_VALIDATE.MESSAGE });
-        return;
+        throw next(new NoValidateError());
       }
       next(err);
     });
