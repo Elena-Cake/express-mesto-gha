@@ -47,7 +47,7 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  const user = req.user._id;
+  const userId = req.user._id;
 
   Card
     .findById(cardId)
@@ -55,7 +55,7 @@ const deleteCard = (req, res, next) => {
       if (!card) {
         throw next(new UnderfinedError('Карточка не найдена'));
       }
-      if (user !== card.owner.valueOf()) {
+      if (userId !== card.owner.valueOf()) {
         throw next(new ForbiddenError());
       }
       return card.remove()
