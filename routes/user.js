@@ -2,7 +2,6 @@ const router = require('express').Router();
 const {
   getUsers, getUser, updateUser, updateAvatar,
 } = require('../controllers/usersControllers');
-
 const { auth } = require('../midldlewares/auth');
 
 router.get('/', auth, getUsers);

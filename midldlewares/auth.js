@@ -7,7 +7,7 @@ const auth = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith('Bearer')) {
     res.status(CodeStatus.UNAUTHORIZED.CODE)
-      .send({ message: CodeStatus.UNAUTHORIZED.MESSAGE, auth: 'err' });
+      .send({ message: CodeStatus.UNAUTHORIZED.MESSAGE });
   }
 
   const jwt = authorization.replace('Bearer ', '');
@@ -19,7 +19,7 @@ const auth = (req, res, next) => {
       .send({ message: CodeStatus.UNAUTHORIZED.MESSAGE });
   }
   req.user = payload;
-  next();
+  return next();
 };
 
 module.exports = { auth };
