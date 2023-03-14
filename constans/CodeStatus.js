@@ -5,10 +5,10 @@ const CodeStatus = {
   //   CODE: 400,
   //   MESSAGE: 'Переданы некорректные данные',
   // },
-  // UNAUTHORIZED: {
-  //   CODE: 401,
-  //   MESSAGE: 'Проверьте почту и пароль',
-  // },
+  UNAUTHORIZED: {
+    CODE: 401,
+    MESSAGE: 'Проверьте почту и пароль',
+  },
   // FORBIDDEN: {
   //   CODE: 403,
   //   MESSAGE: 'Недостаточно прав',
