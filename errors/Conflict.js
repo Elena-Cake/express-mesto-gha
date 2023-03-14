@@ -3,7 +3,7 @@ class ConflictError extends Error {
     super();
     this.message = 'Пользователь с такими данными уже существует';
     this.name = 'ConflictError';
-    this.statusCode = 401;
+    this.statusCode = 409;
   }
 }
 
