@@ -50,6 +50,25 @@ const getUser = (req, res, next) => {
     .catch(next);
 };
 
+const getOwner = (req, res, next) => {
+  const id = req.user._id;
+  User
+    .findById(id)
+    .then((user) => {
+      if (!user) {
+        throw next(new UnderfinedError('Пользователь не найден'));
+      }
+      res.status(CodeStatus.OK.CODE)
+        .send(createUserDTO(user));
+    })
+    .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        throw next(new NoValidateError());
+      }
+    })
+    .catch(next);
+};
+
 // POST http://localhost:3001/users/signup
 const createUser = (req, res, next) => {
   const {
@@ -144,5 +163,5 @@ const updateAvatar = (req, res, next) => {
 };
 
 module.exports = {
-  getUsers, getUser, createUser, updateUser, updateAvatar, login,
+  getUsers, getUser, createUser, updateUser, updateAvatar, login, getOwner,
 };

@@ -35,7 +35,7 @@ router.use('/cards', cardRoutes);
 
 router.use(
   (req, res) => {
-    res.status(404).send({ message: 'Неправильный путь' });
+    res.status(404).send({ message: 'Обращение по необъявленному пути' });
   },
 );
 
