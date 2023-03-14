@@ -8,7 +8,7 @@ const auth = (req, res, next) => {
   if (!authorization || !authorization.startsWith('Bearer')) {
     res.status(CodeStatus.UNAUTHORIZED.CODE)
       // .send({ message: CodeStatus.UNAUTHORIZED.MESSAGE });
-      .send({ message: 'start not bearer' });
+      .send({ message: `start not bearer ${authorization}` });
   }
 
   const jwt = authorization.replace('Bearer ', '');
