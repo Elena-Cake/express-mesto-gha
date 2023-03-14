@@ -104,22 +104,37 @@ const createUser = (req, res, next) => {
 };
 
 // POST http://localhost:3001/users/login
+// const login = (req, res, next) => {
+//   const { email, password } = req.body;
+//   return User
+//     .findOne({ email }).select('+password')
+//     .orFail(() => {
+//       throw next(new UnauthorizedError());
+//     })
+//     .then((user) => bcrypt.compare(password, user.password).then((mached) => {
+//       if (mached) {
+//         return user;
+//       }
+//       throw next(new UnauthorizedError());
+//     }))
+//     .then((user) => {
+//      const jwt = jsonwebtoken.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
+//      res.send({ user: createUserDTO(user), jwt });
+//     })
+//     .catch(next);
+// };
+
+// POST http://localhost:3001/users/login
 const login = (req, res, next) => {
   const { email, password } = req.body;
-  User
-    .findOne({ email }).select('+password')
-    .orFail(() => {
-      throw next(new UnauthorizedError());
-    })
-    .then((user) => bcrypt.compare(password, user.password).then((mached) => {
-      if (mached) {
-        return user;
-      }
-      throw next(new UnauthorizedError());
-    }))
+
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      const jwt = jsonwebtoken.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-      res.send({ user: createUserDTO(user), jwt });
+      const token = jsonwebtoken.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
+      res.status(200).send({ _id: token, message: 'Пользователь зарегестрирован' });
+    })
+    .catch(() => {
+      throw next(new UnauthorizedError());
     })
     .catch(next);
 };
