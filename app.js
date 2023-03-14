@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { celebrate, Joi, errors } = require('celebrate');
+const { errors } = require('celebrate');
 // const { default: helmet } = require('helmet');
 // const cors = require('cors');
 const bodyParser = require('body-parser');
