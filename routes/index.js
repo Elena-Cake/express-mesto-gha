@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 
 const { CodeStatus } = require('../constans/CodeStatus');
 const { createUser, login } = require('../controllers/usersControllers');
@@ -28,6 +28,8 @@ router.post('/users/login', celebrate({
 
 router.use('/users', userRoutes);
 router.use('/cards', cardRoutes);
+
+router.use(errors());
 
 router.use((req, res) => {
   res.status(CodeStatus.UNDERFINED.CODE).send({ message: CodeStatus.UNDERFINED.TEAPOT_MESSAGE });
