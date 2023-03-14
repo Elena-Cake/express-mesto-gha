@@ -4,12 +4,12 @@ const { JWT_SECRET } = require('../config');
 
 // get
 const auth = (req, res, next) => {
-  console.log(req.headers);
+  console.log(req);
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith('Bearer')) {
     res.status(CodeStatus.UNAUTHORIZED.CODE)
       // .send({ message: CodeStatus.UNAUTHORIZED.MESSAGE });
-      .send({ message: `start not bearer ${req.headers}` });
+      .send({ message: `start not bearer ${req}` });
   }
 
   const jwt = authorization.replace('Bearer ', '');
