@@ -5,7 +5,7 @@ const cardRoutes = require('./card');
 const { createUser, login } = require('../controllers/usersControllers');
 
 router.post(
-  '/users/signup',
+  '/signup',
   celebrate({
     body: Joi.object().keys({
       email: Joi.string().required().email(),
@@ -20,7 +20,7 @@ router.post(
 );
 
 router.post(
-  '/users/signin',
+  '/signin',
   celebrate({
     body: Joi.object().keys({
       email: Joi.string().required().email(),

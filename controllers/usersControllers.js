@@ -87,7 +87,6 @@ const createUser = (req, res, next) => {
 // POST http://localhost:3001/users/login
 const login = (req, res, next) => {
   const { email, password } = req.body;
-  console.log('login');
   User
     .findOne({ email }).select('+password')
     .orFail(() => {
