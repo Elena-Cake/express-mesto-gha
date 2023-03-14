@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 // const { default: helmet } = require('helmet');
-// const cors = require('cors');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const routes = require('./routes');
 
@@ -24,6 +24,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 
 app.use(routes);
 

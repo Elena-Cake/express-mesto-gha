@@ -7,9 +7,8 @@ const auth = (req, res, next) => {
   console.log(req);
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith('Bearer')) {
-    res.status(CodeStatus.UNAUTHORIZED.CODE)
-      // .send({ message: CodeStatus.UNAUTHORIZED.MESSAGE });
-      .send({ message: `start not bearer ${req}` });
+    return res.status(CodeStatus.UNAUTHORIZED.CODE)
+      .send({ message: CodeStatus.UNAUTHORIZED.MESSAGE });
   }
 
   const jwt = authorization.replace('Bearer ', '');
@@ -17,7 +16,7 @@ const auth = (req, res, next) => {
   try {
     payload = jsonwebtoken.verify(jwt, JWT_SECRET);
   } catch (err) {
-    res.status(CodeStatus.UNAUTHORIZED.CODE)
+    return res.status(CodeStatus.UNAUTHORIZED.CODE)
       .send({ message: CodeStatus.UNAUTHORIZED.MESSAGE });
   }
   req.user = payload;
