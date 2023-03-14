@@ -6,9 +6,9 @@ const {
 } = require('../controllers/usersControllers');
 const { auth } = require('../midldlewares/auth');
 
+router.get('/', getUsers);
 router.use(auth);
 
-router.get('/', getUsers);
 router.get('/me', getOwner);
 
 router.get('/:id', celebrate({

@@ -51,9 +51,9 @@ const getUser = (req, res, next) => {
 };
 
 const getOwner = (req, res, next) => {
-  const id = req.user._id;
+  const userId = req.user._id;
   User
-    .findById(id)
+    .findById(userId)
     .then((user) => {
       if (!user) {
         throw next(new UnderfinedError('Пользователь не найден'));
