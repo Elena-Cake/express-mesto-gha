@@ -19,6 +19,7 @@ const createUserDTO = (user) => (
   }
 );
 
+// GET http://localhost:3001/users/
 const getUsers = (req, res, next) => {
   User
     .find({})
@@ -31,6 +32,7 @@ const getUsers = (req, res, next) => {
     .catch(next);
 };
 
+// GET http://localhost:3001/users/:id
 const getUser = (req, res, next) => {
   const { id } = req.params;
   User
@@ -50,6 +52,7 @@ const getUser = (req, res, next) => {
     .catch(next);
 };
 
+// GET http://localhost:3001/users/me
 const getOwner = (req, res, next) => {
   const userId = req.user._id;
   User
@@ -69,7 +72,49 @@ const getOwner = (req, res, next) => {
     .catch(next);
 };
 
-// POST http://localhost:3001/users/signup
+// PATCH http://localhost:3001/users/me/avatar
+const updateUser = (req, res, next) => {
+  const { name, about } = req.body;
+  const userId = req.user._id;
+  User
+    .findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true })
+    .then((user) => {
+      if (!user) {
+        throw next(new UnderfinedError('Пользователь не найден'));
+      }
+      res.status(CodeStatus.OK.CODE)
+        .send({ data: user });
+    })
+    .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        throw next(new NoValidateError());
+      }
+    })
+    .catch(next);
+};
+
+// PATCH http://localhost:3001/users/me/
+const updateAvatar = (req, res, next) => {
+  const { avatar } = req.body;
+  const userId = req.user._id;
+  User
+    .findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
+    .then((user) => {
+      if (!user) {
+        throw next(new UnderfinedError('Пользователь не найден'));
+      }
+      res.status(CodeStatus.OK.CODE)
+        .send(createUserDTO(user));
+    })
+    .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        throw next(new NoValidateError());
+      }
+      next(err);
+    });
+};
+
+// POST http://localhost:3001/signup
 const createUser = (req, res, next) => {
   const {
     name,
@@ -103,28 +148,7 @@ const createUser = (req, res, next) => {
     });
 };
 
-// POST http://localhost:3001/users/login
-// const login = (req, res, next) => {
-//   const { email, password } = req.body;
-//   return User
-//     .findOne({ email }).select('+password')
-//     .orFail(() => {
-//       throw next(new UnauthorizedError());
-//     })
-//     .then((user) => bcrypt.compare(password, user.password).then((mached) => {
-//       if (mached) {
-//         return user;
-//       }
-//       throw next(new UnauthorizedError());
-//     }))
-//     .then((user) => {
-//      const jwt = jsonwebtoken.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-//      res.send({ user: createUserDTO(user), jwt });
-//     })
-//     .catch(next);
-// };
-
-// POST http://localhost:3001/users/login
+// POST http://localhost:3001/login
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
@@ -137,46 +161,6 @@ const login = (req, res, next) => {
       throw next(new UnauthorizedError());
     })
     .catch(next);
-};
-
-const updateUser = (req, res, next) => {
-  const { name, about } = req.body;
-  const userId = req.user._id;
-  User
-    .findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true })
-    .then((user) => {
-      if (!user) {
-        throw next(new UnderfinedError('Пользователь не найден'));
-      }
-      res.status(CodeStatus.OK.CODE)
-        .send({ data: user });
-    })
-    .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        throw next(new NoValidateError());
-      }
-    })
-    .catch(next);
-};
-
-const updateAvatar = (req, res, next) => {
-  const { avatar } = req.body;
-  const userId = req.user._id;
-  User
-    .findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
-    .then((user) => {
-      if (!user) {
-        throw next(new UnderfinedError('Пользователь не найден'));
-      }
-      res.status(CodeStatus.OK.CODE)
-        .send(createUserDTO(user));
-    })
-    .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        throw next(new NoValidateError());
-      }
-      next(err);
-    });
 };
 
 module.exports = {

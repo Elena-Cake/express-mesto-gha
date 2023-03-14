@@ -16,6 +16,7 @@ const createCardDTO = (card) => (
   }
 );
 
+// GET http://localhost:3001/cards/
 const getCards = (req, res, next) => {
   Card
     .find({})
@@ -29,6 +30,7 @@ const getCards = (req, res, next) => {
     .catch(next);
 };
 
+// POST http://localhost:3001/cards/
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card
@@ -45,6 +47,7 @@ const createCard = (req, res, next) => {
     .catch(next);
 };
 
+// DELETE http://localhost:3001/cards/:cardId
 const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   const userId = req.user._id;
@@ -69,6 +72,7 @@ const deleteCard = (req, res, next) => {
     .catch(next);
 };
 
+// PUT http://localhost:3001/cards/:cardId/likes
 const likeCard = (req, res, next) => {
   Card
     .findByIdAndUpdate(
@@ -92,6 +96,7 @@ const likeCard = (req, res, next) => {
     .catch(next);
 };
 
+// DELETE http://localhost:3001/cards/:cardId/likes
 const dislikeCard = (req, res, next) => {
   Card
     .findByIdAndUpdate(
