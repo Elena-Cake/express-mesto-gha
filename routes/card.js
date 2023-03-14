@@ -6,7 +6,6 @@ const {
 } = require('../controllers/cardsControllers');
 const { auth } = require('../midldlewares/auth');
 
-const patternId = /[0-9a-f]{24}/i;
 const patternUrl = /(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?/i;
 
 router.get('/', auth, getCards);
@@ -23,18 +22,18 @@ router.post('/', celebrate({
 
 router.delete('/:cardId', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().pattern(patternId),
+    cardId: Joi.string().length(24).hex(),
   }),
 }), deleteCard);
 
 router.put('/:cardId/likes', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().pattern(patternId),
+    cardId: Joi.string().length(24).hex(),
   }),
 }), likeCard);
 router.delete('/:cardId/likes', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().pattern(patternId),
+    cardId: Joi.string().length(24).hex(),
   }),
 }), dislikeCard);
 

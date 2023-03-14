@@ -13,7 +13,7 @@ router.get('/me', getOwner);
 
 router.get('/:id', celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().pattern(/[0-9a-f]{24}/i),
+    id: Joi.string().length(24).hex(),
   }),
 }), getUser);
 
@@ -26,7 +26,7 @@ router.patch('/me', celebrate({
 
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(/(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?/i),
+    avatar: Joi.string().required().regex(/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/),
   }),
 }), updateAvatar);
 

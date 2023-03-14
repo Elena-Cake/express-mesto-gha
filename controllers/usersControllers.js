@@ -126,8 +126,9 @@ const login = (req, res, next) => {
 
 const updateUser = (req, res, next) => {
   const { name, about } = req.body;
+  const id = req.user._id;
   User
-    .findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
+    .findByIdAndUpdate(id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
         throw next(new UnderfinedError('Пользователь не найден'));
@@ -145,8 +146,9 @@ const updateUser = (req, res, next) => {
 
 const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
+  const id = req.user._id;
   User
-    .findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
+    .findByIdAndUpdate(id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
         throw next(new UnderfinedError('Пользователь не найден'));
