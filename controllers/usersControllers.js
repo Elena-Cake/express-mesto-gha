@@ -46,8 +46,8 @@ const getUser = (req, res, next) => {
       if (err instanceof mongoose.Error.CastError) {
         next(new NoValidateError());
       } else {
-        next(err)
-      };
+        next(err);
+      }
     });
 };
 
@@ -67,8 +67,8 @@ const getOwner = (req, res, next) => {
       if (err instanceof mongoose.Error.CastError) {
         next(new NoValidateError());
       } else {
-        next(err)
-      };
+        next(err);
+      }
     });
 };
 
