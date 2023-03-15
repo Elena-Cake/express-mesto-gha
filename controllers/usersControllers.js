@@ -7,7 +7,6 @@ const { JWT_SECRET } = require('../config');
 const UnderfinedError = require('../errors/Underfined');
 const NoValidateError = require('../errors/NoValidate');
 const ConflictError = require('../errors/Conflict');
-const UnauthorizedError = require('../errors/Unauthorized');
 
 const createUserDTO = (user) => (
   {
@@ -48,7 +47,7 @@ const getUser = (req, res, next) => {
         next(new NoValidateError());
       } else {
         next(err)
-      }
+      };
     });
 };
 
@@ -69,7 +68,7 @@ const getOwner = (req, res, next) => {
         next(new NoValidateError());
       } else {
         next(err)
-      }
+      };
     });
 };
 

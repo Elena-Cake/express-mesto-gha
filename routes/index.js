@@ -36,8 +36,8 @@ router.use('/cards', cardRoutes);
 
 router.use(
   (req, res, next) => {
-    next(new UnderfinedError('Обращение по необъявленному пути'))
-  }
+    next(new UnderfinedError('Обращение по необъявленному пути'));
+  },
 );
 
 module.exports = router;
