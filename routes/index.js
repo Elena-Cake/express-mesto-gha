@@ -3,6 +3,7 @@ const { celebrate, Joi } = require('celebrate');
 const userRoutes = require('./user');
 const cardRoutes = require('./card');
 const { createUser, login } = require('../controllers/usersControllers');
+const UnderfinedError = require('../errors/Underfined');
 
 router.post(
   '/signup',
@@ -34,9 +35,9 @@ router.use('/users', userRoutes);
 router.use('/cards', cardRoutes);
 
 router.use(
-  (req, res) => {
-    res.status(404).send({ message: 'Обращение по необъявленному пути' });
-  },
+  (req, res, next) => {
+    next(new UnderfinedError('Обращение по необъявленному пути'))
+  }
 );
 
 module.exports = router;

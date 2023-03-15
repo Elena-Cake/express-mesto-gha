@@ -38,18 +38,18 @@ const getUser = (req, res, next) => {
   User
     .findById(id)
     .then((user) => {
-      if (!user) {
-        throw next(new UnderfinedError('Пользователь не найден'));
+      if (user) {
+        res.send(createUserDTO(user));
       }
-      res.status(CodeStatus.OK.CODE)
-        .send(createUserDTO(user));
+      throw new UnderfinedError('Пользователь не найден');
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw next(new NoValidateError());
+        next(new NoValidateError());
+      } else {
+        next(err)
       }
-    })
-    .catch(next);
+    });
 };
 
 // GET http://localhost:3001/users/me
@@ -59,17 +59,18 @@ const getOwner = (req, res, next) => {
     .findById(userId)
     .then((user) => {
       if (!user) {
-        throw next(new UnderfinedError('Пользователь не найден'));
+        throw new UnderfinedError('Пользователь не найден');
       }
       res.status(CodeStatus.OK.CODE)
         .send(createUserDTO(user));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw next(new NoValidateError());
+        next(new NoValidateError());
+      } else {
+        next(err)
       }
-    })
-    .catch(next);
+    });
 };
 
 // PATCH http://localhost:3001/users/me/avatar
@@ -80,17 +81,16 @@ const updateUser = (req, res, next) => {
     .findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        throw next(new UnderfinedError('Пользователь не найден'));
+        throw new UnderfinedError('Пользователь не найден');
       }
-      res.status(CodeStatus.OK.CODE)
-        .send({ data: user });
+      res.send({ data: user });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw next(new NoValidateError());
+        next(new NoValidateError());
       }
-    })
-    .catch(next);
+      next(err);
+    });
 };
 
 // PATCH http://localhost:3001/users/me/
@@ -101,14 +101,14 @@ const updateAvatar = (req, res, next) => {
     .findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        throw next(new UnderfinedError('Пользователь не найден'));
+        throw new UnderfinedError('Пользователь не найден');
       }
       res.status(CodeStatus.OK.CODE)
         .send(createUserDTO(user));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw next(new NoValidateError());
+        next(new NoValidateError());
       }
       next(err);
     });
@@ -138,13 +138,13 @@ const createUser = (req, res, next) => {
           .send(createUserDTO(user)))
         .catch((err) => {
           if (err instanceof mongoose.Error.ValidationError) {
-            throw next(new NoValidateError());
+            next(new NoValidateError());
           }
           if (err.code === 11000) {
-            throw next(new ConflictError());
+            next(new ConflictError());
           }
-        })
-        .catch(next);
+          next(err);
+        });
     });
 };
 
@@ -155,10 +155,7 @@ const login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jsonwebtoken.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-      res.status(200).send({ _id: token, message: 'Пользователь зарегестрирован' });
-    })
-    .catch(() => {
-      throw next(new UnauthorizedError());
+      res.send({ _id: token, message: 'Пользователь зарегестрирован' });
     })
     .catch(next);
 };

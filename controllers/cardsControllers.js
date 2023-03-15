@@ -41,7 +41,7 @@ const createCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw next(new NoValidateError());
+        next(new NoValidateError());
       }
     })
     .catch(next);
@@ -56,20 +56,20 @@ const deleteCard = (req, res, next) => {
     .findById(cardId)
     .then((card) => {
       if (!card) {
-        throw next(new UnderfinedError('Карточка не найдена'));
+        throw new UnderfinedError('Карточка не найдена');
       }
       if (userId !== card.owner.valueOf()) {
-        throw next(new ForbiddenError());
+        throw new ForbiddenError();
       }
       return card.remove()
         .then(() => res.send({ card }));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw next(new NoValidateError());
+        next(new NoValidateError());
       }
-    })
-    .catch(next);
+      next(err);
+    });
 };
 
 // PUT http://localhost:3001/cards/:cardId/likes
@@ -83,17 +83,17 @@ const likeCard = (req, res, next) => {
     .populate('owner')
     .then((card) => {
       if (!card) {
-        throw next(new UnderfinedError('Карточка не найдена'));
+        throw new UnderfinedError('Карточка не найдена');
       }
       res.status(CodeStatus.OK.CODE)
         .send(createCardDTO(card));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw next(new NoValidateError());
+        next(new NoValidateError());
       }
-    })
-    .catch(next);
+      next(err);
+    });
 };
 
 // DELETE http://localhost:3001/cards/:cardId/likes
@@ -107,17 +107,17 @@ const dislikeCard = (req, res, next) => {
     .populate('owner')
     .then((card) => {
       if (!card) {
-        throw next(new UnderfinedError('Карточка не найдена'));
+        throw new UnderfinedError('Карточка не найдена');
       }
       res.status(CodeStatus.OK.CODE)
         .send(createCardDTO(card));
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw next(new NoValidateError());
+        next(new NoValidateError());
       }
-    })
-    .catch(next);
+      next(err);
+    });
 };
 
 module.exports = {
