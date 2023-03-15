@@ -42,9 +42,10 @@ const createCard = (req, res, next) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new NoValidateError());
+        return;
       }
-    })
-    .catch(next);
+      next(err);
+    });
 };
 
 // DELETE http://localhost:3001/cards/:cardId
@@ -67,6 +68,7 @@ const deleteCard = (req, res, next) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         next(new NoValidateError());
+        return;
       }
       next(err);
     });
@@ -91,6 +93,7 @@ const likeCard = (req, res, next) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         next(new NoValidateError());
+        return;
       }
       next(err);
     });
@@ -115,6 +118,7 @@ const dislikeCard = (req, res, next) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         next(new NoValidateError());
+        return;
       }
       next(err);
     });

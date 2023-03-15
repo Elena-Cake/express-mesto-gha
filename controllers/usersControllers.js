@@ -39,15 +39,16 @@ const getUser = (req, res, next) => {
     .then((user) => {
       if (user) {
         res.send(createUserDTO(user));
+        return;
       }
       throw new UnderfinedError('Пользователь не найден');
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         next(new NoValidateError());
-      } else {
-        next(err);
+        return;
       }
+      next(err);
     });
 };
 
@@ -66,9 +67,9 @@ const getOwner = (req, res, next) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         next(new NoValidateError());
-      } else {
-        next(err);
+        return;
       }
+      next(err);
     });
 };
 
@@ -87,6 +88,7 @@ const updateUser = (req, res, next) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new NoValidateError());
+        return;
       }
       next(err);
     });
@@ -108,6 +110,7 @@ const updateAvatar = (req, res, next) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new NoValidateError());
+        return;
       }
       next(err);
     });
@@ -138,9 +141,11 @@ const createUser = (req, res, next) => {
         .catch((err) => {
           if (err instanceof mongoose.Error.ValidationError) {
             next(new NoValidateError());
+            return;
           }
           if (err.code === 11000) {
             next(new ConflictError());
+            return;
           }
           next(err);
         });
