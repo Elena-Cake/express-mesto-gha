@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { PORT = '3001' } = process.env;
+const { PORT = '3000' } = process.env;
 const { JWT_SECRET = 'idontknow1secret' } = process.env;
 const { DB_CONNECT_PATH = 'mongodb://0.0.0.0:27017/mestodb' } = process.env;
 
